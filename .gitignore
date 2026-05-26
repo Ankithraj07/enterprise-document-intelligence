@@ -1,0 +1,8 @@
+venv/
+venv64/
+vectorstore/
+__pycache__/
+*.pyc
+.env
+feedback_log.jsongit add .
+data/docs/
