@@ -85,21 +85,22 @@ def get_confidence(vectorstore , question):
     Lower L2 distance = chunks are closer to the question = higher confidence.
     """
     
-    docs_with_scores = vectorstore.similarity_search_with_score(question , k = 4)
+    docs_with_scores = vectorstore.similarity_search_with_score(question, k=4)
     
     if not docs_with_scores:
-        return "Low" , 999.0
+        return "Low", 999.0
     
     avg_score = sum(score for _, score in docs_with_scores) / len(docs_with_scores)
     
-    if avg_score < 0.5:
+    # Adjusted thresholds based on real L2 distance ranges
+    if avg_score < 1.0:
         confidence = "High"
-    elif avg_score < 1.0:
+    elif avg_score < 1.5:
         confidence = "Medium"
     else:
         confidence = "Low"
         
-    return confidence , round(avg_score , 3)
+    return confidence, round(avg_score, 3)
 
 def get_answer(chain , vectorstore , question):
     """ 

@@ -11,7 +11,6 @@ DOCS_PATH = "data/docs"
 VECTORSTORE_PATH = "vectorstore/faiss_index"
 
 def load_documents(folder_path):
-    """Load all PDFs, DOCX, and TXT files from a folder."""
     documents = []
     for filename in os.listdir(folder_path):
         filepath = os.path.join(folder_path, filename)
@@ -24,9 +23,11 @@ def load_documents(folder_path):
         else:
             continue
         docs = loader.load()
-        # Tag each doc with its source filename — used for citations later
-        for doc in docs:
+        for i, doc in enumerate(docs):
             doc.metadata["source"] = filename
+            # PDFs already have page numbers, TXT and DOCX do not
+            if "page" not in doc.metadata:
+                doc.metadata["page"] = f"chunk {i+1}"
         documents.extend(docs)
         print(f"Loaded: {filename} ({len(docs)} pages/chunks)")
     return documents
