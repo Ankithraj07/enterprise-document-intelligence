@@ -20,7 +20,7 @@ Always mention which document your answer came from.
 Context.
 {context}
 
-Chat histroy:
+Chat history:
 {chat_history}
 
 Question.
