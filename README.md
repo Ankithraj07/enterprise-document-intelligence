@@ -11,7 +11,7 @@ pinned: false
 
 RAG pipeline for querying internal company documents using natural language.
 
-🔗 **Live Demo:** https://huggingface.co/spaces/Ankith07/enterprise-document-intelligence
+🔗 Live Demo: https://huggingface.co/spaces/Ankith07/enterprise-document-intelligence
 
 ---
 
