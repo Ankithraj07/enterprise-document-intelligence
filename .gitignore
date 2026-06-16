@@ -4,5 +4,5 @@ vectorstore/
 __pycache__/
 *.pyc
 .env
-feedback_log.jsongit add .
+feedback_log.json
 data/docs/
