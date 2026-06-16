@@ -10,10 +10,21 @@ load_dotenv()
 DOCS_PATH = "data/docs"
 VECTORSTORE_PATH = "vectorstore/faiss_index"
 
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+
+def validate_file(filepath, filename):
+    size = os.path.getsize(filepath)
+    if size > MAX_FILE_SIZE:
+        print(f"Skipping {filename} — file too large ({size // 1024 // 1024}MB). Max is 10MB.")
+        return False
+    return True
+
 def load_documents(folder_path):
     documents = []
     for filename in os.listdir(folder_path):
         filepath = os.path.join(folder_path, filename)
+        if not validate_file(filepath, filename):
+            continue
         if filename.endswith(".pdf"):
             loader = PyPDFLoader(filepath)
         elif filename.endswith(".docx"):
@@ -25,18 +36,29 @@ def load_documents(folder_path):
         docs = loader.load()
         for i, doc in enumerate(docs):
             doc.metadata["source"] = filename
-            # PDFs already have page numbers, TXT and DOCX do not
+            doc.metadata["file_type"] = filename.split(".")[-1].upper()
+            doc.metadata["chunk_index"] = i
             if "page" not in doc.metadata:
                 doc.metadata["page"] = f"chunk {i+1}"
         documents.extend(docs)
         print(f"Loaded: {filename} ({len(docs)} pages/chunks)")
     return documents
 
+def get_chunk_config(documents):
+    total_chars = sum(len(doc.page_content) for doc in documents)
+    if total_chars < 10000:
+        return 300, 30
+    elif total_chars < 100000:
+        return 500, 50
+    else:
+        return 1000, 100
+
 def split_documents(documents):
-    """Split into chunks. chunk_size and overlap are tunable."""
+    chunk_size, chunk_overlap = get_chunk_config(documents)
+    print(f"Using chunk_size={chunk_size}, overlap={chunk_overlap} based on document size")
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50,         # overlap prevents losing context at chunk boundaries
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
         separators=["\n\n", "\n", ".", " "]
     )
     chunks = splitter.split_documents(documents)

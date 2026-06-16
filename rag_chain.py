@@ -1,4 +1,5 @@
 import os
+from tenacity import retry, stop_after_attempt, wait_exponential
 from dotenv import load_dotenv
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -51,9 +52,12 @@ def load_qa_chain():
     vectorstore = load_vectorstore(embeddings)
 
     retriever = vectorstore.as_retriever(
-        search_type="similarity",
-        search_kwargs={"k": 4}
-    )
+    search_type="mmr",  # Maximum Marginal Relevance — less redundant results
+    search_kwargs={
+        "k": 4,
+        "fetch_k": 20,  # fetch more, then pick diverse top 4
+    }
+)
 
     # FIXED: Replaced decommissioned 'llama3-70b-8192' with active 'llama-3.3-70b-versatile'
     llm = ChatGroq(
@@ -101,6 +105,12 @@ def get_confidence(vectorstore , question):
         confidence = "Low"
         
     return confidence, round(avg_score, 3)
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=10)
+)
+def _call_chain(chain, question):
+    return chain.invoke({"question": question})
 
 def get_answer(chain , vectorstore , question):
     """ 
@@ -109,13 +119,20 @@ def get_answer(chain , vectorstore , question):
     """
     
     # Confidence check — done before chain call so we can warn user early
-    confidence , score = get_confidence(vectorstore , question)
+    confidence, score = get_confidence(vectorstore, question)
     
-    # Chain call - memory is handled internally by ConversationalRetrievalChain
-    result = chain.invoke({"question": question})
+    try:
+        result = _call_chain(chain, question)
+    except Exception as e:
+        return (
+            f"The AI service is temporarily unavailable. Please try again in a moment. Error: {str(e)}",
+            [],
+            "Low",
+            999.0
+        )
     
     answer = result["answer"]
-    source_docs = result.get("source_documents" , [])
+    source_docs = result.get("source_documents", [])
     
     # Deduplicate and format Source
     sources = []
