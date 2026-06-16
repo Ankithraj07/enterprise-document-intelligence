@@ -1,0 +1,16 @@
+DOCUMENT_REF: IT-SEC-2026-V1
+SYSTEM CLASSIFICATION: Restricted Internal
+SUBJECT: Remote Access and Endpoint Security Architecture
+
+1. VIRTUAL PRIVATE NETWORK (VPN) ACCESS POLICIES
+All engineering and operations staff accessing the production staging environments remotely must connect via the corporate Perimeter 81 Gateway. Split-tunneling is strictly deactivated on all corporate-issued laptops to prevent lateral network contamination. 
+
+2. PASSWORDS AND IDENTITY MANAGEMENT
+Corporate identity accounts managed via Okta Single Sign-On (SSO) must enforce the following cryptographic constraints:
+- Minimum length: 16 alphanumeric characters.
+- Must include at least 2 uppercase letters, 2 digits, and 3 special symbols (e.g., #, $, !, %).
+- Maximum rotation lifetime: 60 calendar days. Automated lockouts occur on day 61.
+- SMS-based Multi-Factor Authentication (MFA) is strictly deprecated. Employees must utilize hardware-based security keys (YubiKey 5 Series) or the Google Authenticator mobile application.
+
+3. DATA EXFILTRATION CONTROLS
+The download of source code repository files (.git structures), customer personally identifiable information (PII), or database backups onto local personal drives is strictly prohibited. Security anomalies are flagged instantly by the CrowdStrike Falcon agent and escalated to sec-ops@company.com within 5 minutes.

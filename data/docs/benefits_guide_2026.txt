@@ -1,0 +1,12 @@
+DOCUMENT_REF: HR-BEN-2026
+SYSTEM CLASSIFICATION: Public Internal
+SUBJECT: Global Employee Benefits and Wellness Allowances
+
+1. HEALTH AND WELLNESS STIPEND
+Full-time employees receive a quarterly Wellness Allowance of $300 USD. This allowance covers gym memberships, mental health applications (such as Headspace or Calm), physical therapy sessions, and ergonomic office equipment. Reimbursement requests must be submitted via the Navan Expense platform under the category "Quarterly Wellness" with itemized receipts attached.
+
+2. PARENTAL LEAVE PROVISIONS
+The company provides up to 16 weeks of fully compensated Parental Leave for primary caregivers following the birth, adoption, or foster placement of a child. Secondary caregivers are eligible for 8 weeks of fully compensated leave. 
+
+3. CONTINUING EDUCATION AND TUITION
+An annual professional development budget of $1,500 USD is allocated to every permanent employee on their work anniversary. This budget can be used for technical certifications (AWS, GCP, LangChain Developer), academic courses, or industry conference tickets. Approval from your direct line manager is required prior to purchasing.

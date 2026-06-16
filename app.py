@@ -17,11 +17,17 @@ st.caption("Ask question about your company Documents. Answer include source cit
 def get_chain_and_store():
     return load_qa_chain()    # returns (chain, vectorstore)
 
-# --- Guard: check vector store exists ---
+# --- Guard: auto-run ingestion if vectorstore missing ---
 if not os.path.exists("vectorstore/faiss_index"):
-    st.error("No vector store found. Run `python ingest.py` first to index your documents.")
-    st.stop()
-
+    from ingest import load_documents, split_documents, build_vectorstore
+    os.makedirs("vectorstore", exist_ok=True)
+    with st.spinner("First time setup — indexing documents. Please wait 2-3 minutes..."):
+        docs = load_documents("data/docs")
+        chunks = split_documents(docs)
+        build_vectorstore(chunks)
+    st.success("Indexing complete. Loading app...")
+    st.rerun()
+    
 chain, vectorstore = get_chain_and_store()
 
 # --- Sidebar ---
